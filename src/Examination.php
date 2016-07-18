@@ -37,7 +37,7 @@ class Examination
      * 测试id
      * @var string
      */
-    protected $id;
+    protected $name;
 
     /**
      * @var Api
@@ -65,15 +65,43 @@ class Examination
      */
     protected $status = self::STATUS_WAITING;
 
-    function __construct(Api $api, array $assertions = [], $id = null)
+    function __construct($name, Api $api, array $assertions = [])
     {
+        if (is_null($name)) {
+            $name = Text::uuid();
+        }
+        $this->name = $name;
         $this->api = $api;
         $this->assertions = $assertions;
         $this->report = new Report();
-        if (is_null($id)) {
-            $id = Text::uuid();
-        }
-        $this->id = $id;
+    }
+
+    protected function initialize()
+    {
+    }
+
+    /**
+     * @param string $name
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param Api $api
+     */
+    public function setApi($api)
+    {
+        $this->api = $api;
     }
 
     /**
@@ -82,6 +110,15 @@ class Examination
     public function getApi()
     {
         return $this->api;
+    }
+
+    /**
+     * 创建api
+     * @return Api
+     */
+    static function createApi()
+    {
+        return call_user_func_array([Factory, 'createApi'], func_get_args());
     }
 
     /**
@@ -161,10 +198,5 @@ class Examination
     public function getCatch()
     {
         return $this->catch;
-    }
-
-    public function getId()
-    {
-        return $this->id;
     }
 }

@@ -16,7 +16,7 @@ class Factory
      * @param $url
      * @param string $method
      * @param array $query
-     * @param array $formParams
+     * @param array $posts
      * @param array $auth
      * @param int $timeout
      * @param bool $followRedirect
