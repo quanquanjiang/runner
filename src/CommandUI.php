@@ -6,6 +6,7 @@
 namespace Slince\Runner;
 
 use Slince\Runner\Command\GoCommand;
+use Slince\Runner\Command\RunCommand;
 use Slince\Runner\Command\ValidateCommand;
 use Symfony\Component\Console\Application;
 
@@ -25,7 +26,8 @@ class CommandUI
     {
         return [
             new ValidateCommand(),
-            new GoCommand()
+            new GoCommand(),
+            new RunCommand()
         ];
     }
 

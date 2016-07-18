@@ -16,6 +16,6 @@ class LoginExamination extends Examination
             ])
             ->setEnableCookie(true);
         $this->setApi($api);
-        $this->setName($name);
+        $this->setName(static::NAME);
     }
 }

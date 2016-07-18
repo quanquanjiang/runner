@@ -7,6 +7,6 @@ class AppRunner extends Runner
 {
     function initialize()
     {
-        $this->getClassLoader('psr-0')->addPrefix($this->getNamespace(), './');
+        $this->getClassLoader('psr-4')->addPrefix($this->getNamespace() . '\\', __DIR__);
     }
 }

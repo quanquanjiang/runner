@@ -49,11 +49,12 @@ class RunCommand extends Command
 
     function execute(InputInterface $input, OutputInterface $output)
     {
-        $src = $input->getArgument('src');
-        $bootFile = "{$src}/AppRunner.php";
+        $this->src = $input->getArgument('src');
+        $bootFile = "{$this->src}/AppRunner.php";
         if (!file_exists($bootFile)) {
-            throw new InvalidArgumentException(sprintf("You should create \"AppRunner.php\" at [%s]", $src));
+            throw new InvalidArgumentException(sprintf("You should create \"AppRunner.php\" at [%s]", $this->src));
         }
+        include $bootFile;
         $this->examinations = new ExaminationChain();
         $this->runner = new AppRunner($this->examinations);
         $this->examinations->addAll($this->createExaminations($this->runner));
@@ -95,25 +96,35 @@ class RunCommand extends Command
         });
     }
 
+    /**
+     * 创建测试实例
+     * @param Runner $runner
+     * @return array
+     */
     protected function createExaminations(Runner $runner)
     {
         //找出所有的php文件
         $files = static::getFinder()->files()->name('*.php')->in("{$this->src}/Examination");
         $examinations = [];
         foreach ($files as $file) {
-            $examinationClass = "{$runner->getNamespace()}\\Examination\\{$file->getBasename()}";
+            $examinationClass = "{$runner->getNamespace()}\\Examination\\" . $file->getBasename('.php');
             $examinations[] = new $examinationClass();
         }
         return $examinations;
     }
 
+    /**
+     * 创建测试用例
+     * @param Runner $runner
+     * @return array
+     */
     protected function createTestCases(Runner $runner)
     {
         //找出所有的php文件
         $files = static::getFinder()->files()->name('*.php')->in("{$this->src}/TestCase");
         $testCases = [];
         foreach ($files as $file) {
-            $testCaseClass = "{$runner->getNamespace()}\\TestCase\\{$file->getBasename()}";
+            $testCaseClass = "{$runner->getNamespace()}\\TestCase\\" . $file->getBasename('.php');
             $testCases[] = new $testCaseClass($runner);
         }
         return $testCases;
@@ -124,9 +135,7 @@ class RunCommand extends Command
      */
     public static function getFinder()
     {
-        if (is_null(static::$finder)) {
-            self::$finder = new Finder();
-        }
+        self::$finder = new Finder();
         return self::$finder;
     }
 }

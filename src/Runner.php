@@ -191,6 +191,7 @@ class Runner
             return $this->classLoaders[$type];
         }
         $loader = $type == 'psr-0' ? new ClassLoader() : new Psr4ClassLoader();
+        $loader->register();
         return $this->classLoaders[$type] = $loader;
     }
 
@@ -469,7 +470,7 @@ class Runner
     function getNamespace()
     {
         if (is_null($this->namespace)) {
-            $this->namespace = strstr(get_class($this), '\\', true);
+            $this->namespace = (new \ReflectionClass($this))->getNamespaceName();
         }
         return $this->namespace;
     }

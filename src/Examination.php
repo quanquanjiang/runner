@@ -79,6 +79,7 @@ class Examination
         $this->api = $api;
         $this->assertions = $assertions;
         $this->report = new Report();
+        $this->initialize();
     }
 
     protected function initialize()
@@ -123,7 +124,7 @@ class Examination
      */
     static function createApi()
     {
-        return call_user_func_array([Factory, 'createApi'], func_get_args());
+        return call_user_func_array(['Slince\\Runner\\Factory', 'createApi'], func_get_args());
     }
 
     /**
