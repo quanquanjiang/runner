@@ -50,6 +50,11 @@ class Examination
     protected $assertions = [];
 
     /**
+     * @var array
+     */
+    protected $testCases = [];
+
+    /**
      * 响应中需要捕获的参数
      * @var array
      */
@@ -65,7 +70,7 @@ class Examination
      */
     protected $status = self::STATUS_WAITING;
 
-    function __construct($name, Api $api, array $assertions = [])
+    function __construct($name = null, Api $api = null, array $assertions = [])
     {
         if (is_null($name)) {
             $name = Text::uuid();
@@ -198,5 +203,30 @@ class Examination
     public function getCatch()
     {
         return $this->catch;
+    }
+
+    /**
+     * @param array $testCases
+     */
+    public function setTestCases($testCases)
+    {
+        $this->testCases = $testCases;
+    }
+
+    /**
+     * 添加测试用例
+     * @param TestCase $testCase
+     */
+    function addTestCase(TestCase $testCase)
+    {
+        $this->testCases[] = $testCase;
+    }
+
+    /**
+     * @return array
+     */
+    public function getTestCases()
+    {
+        return $this->testCases;
     }
 }

@@ -15,6 +15,8 @@ use Slince\Event\Dispatcher;
 use Slince\Event\Event;
 use Slince\Runner\Exception\InvalidArgumentException;
 use Slince\Runner\Exception\RuntimeException;
+use Symfony\Component\ClassLoader\ClassLoader;
+use Symfony\Component\ClassLoader\Psr4ClassLoader;
 use Symfony\Component\Filesystem\Filesystem;
 
 class Runner
@@ -98,6 +100,18 @@ class Runner
      */
     protected $cookies;
 
+    /**
+     * 当前命名空间
+     * @var string
+     */
+    protected $namespace;
+
+    /**
+     * class loader
+     * @var array
+     */
+    protected $classLoaders = [];
+
     function __construct(ExaminationChain $examinationChain = null)
     {
         $this->examinationChain = $examinationChain;
@@ -107,6 +121,11 @@ class Runner
         $this->filesystem = new Filesystem();
         $this->cookieContainer = new CookieContainer();
         $this->cookies = new CookieJar();
+        $this->initialize();
+    }
+
+    function initialize()
+    {
     }
 
     /**
@@ -159,6 +178,20 @@ class Runner
     public function getDispatcher()
     {
         return $this->dispatcher;
+    }
+
+    /**
+     * 获取自动加载器
+     * @param $type
+     * @return ClassLoader|Psr4ClassLoader
+     */
+    function getClassLoader($type)
+    {
+        if (isset($this->classLoaders[$type])) {
+            return $this->classLoaders[$type];
+        }
+        $loader = $type == 'psr-0' ? new ClassLoader() : new Psr4ClassLoader();
+        return $this->classLoaders[$type] = $loader;
     }
 
     /**
@@ -427,5 +460,17 @@ class Runner
         } else {
             return $value;
         }
+    }
+
+    /**
+     * 获取当前application的命名空间
+     * @return string
+     */
+    function getNamespace()
+    {
+        if (is_null($this->namespace)) {
+            $this->namespace = strstr(get_class($this), '\\', true);
+        }
+        return $this->namespace;
     }
 }

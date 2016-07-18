@@ -113,7 +113,7 @@ class Factory
             foreach ($request['assertions'] as $type => $assertionConfigs) {
                 $assertions = array_merge($assertions, static::createAssertions($type, $assertionConfigs));
             }
-            $chain->enqueue(static::createExamination($api, $assertions, isset($request['id']) ? $request['id'] : null));
+            $chain->push(static::createExamination($api, $assertions, isset($request['id']) ? $request['id'] : null));
         }
         return $runner;
     }

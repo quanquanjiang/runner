@@ -7,6 +7,8 @@ namespace Slince\Runner;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Response;
+use Slince\Cache\ArrayCache;
+use Slince\Runner\Exception\InvalidArgumentException;
 
 class TestCase
 {
@@ -38,11 +40,52 @@ class TestCase
     protected $examination;
 
     /**
+     * @var Runner
+     */
+    protected $runner;
+
+    /**
      * @return Client
      */
     public function getHttpClient()
     {
         return $this->httpClient;
+    }
+
+    function __construct(Runner $runner)
+    {
+        $this->runner = $runner;
+        $this->initialize();
+        if (!empty($this->for)) {
+            $examination = $this->runner->getExaminationChain()->get($this->for);
+            if (!is_null($examination)) {
+                $examination->addTestCase($this);
+            } else {
+                throw new InvalidArgumentException(sprintf("Runner Cannot find Examination [%s]", $this->for));
+            }
+        } else {
+            throw new InvalidArgumentException(sprintf("Please tell runner what's examination [%s] for", get_class($this)));
+        }
+    }
+
+    function initialize()
+    {
+    }
+
+    /**
+     * @param Runner $runner
+     */
+    public function setRunner(Runner $runner)
+    {
+        $this->runner = $runner;
+    }
+
+    /**
+     * @return Runner
+     */
+    public function getRunner()
+    {
+        return $this->runner;
     }
 
     /**
@@ -89,8 +132,11 @@ class TestCase
         return $this->depends;
     }
 
-    protected function getResponseHeaders()
+    /**
+     * @return ArrayCache
+     */
+    protected function getEnvironmentArguments()
     {
-        return $this->response->getHeaders();
+        return $this->runner->getArguments();
     }
 }
